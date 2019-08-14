@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<config>
+    <placeholders>
+	<inside_analytics_cache>
+	    <block>inside/analytics</block>
+	    <name>inside_analytics</name>
+	    <placeholder>INSIDE_ANALYTICS</placeholder>
+	    <container>Inside_Analytics_Model_Container_Analytics</container>
+	    <cache_lifetime>0</cache_lifetime>
+	</inside_analytics_cache>
+    </placeholders>
+</config>

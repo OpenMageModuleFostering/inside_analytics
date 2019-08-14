@@ -172,7 +172,7 @@ class Inside_Analytics_Model_PageView extends Mage_Core_Model_Abstract {
 		}
 		break;
 	    case Inside_Analytics_Model_System_Config_Source_Page_Type::ARTICLE:
-		$extra['name'] = Mage::app()->getLayout()->getBlock('head')->getTitle();
+		$extra['name'] = Mage::helper('inside')->getPageTitle();
 		break;
 		
 	}

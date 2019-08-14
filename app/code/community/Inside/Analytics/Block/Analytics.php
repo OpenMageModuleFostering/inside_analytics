@@ -68,7 +68,7 @@ class Inside_Analytics_Block_Analytics extends Mage_Core_Block_Template
 	    if (is_null($val)) {
 		continue;
 	    }
-	    $script .= '\''.$key.'\':\''.  addslashes($val).'\',';
+	    $script .= '\''.$key.'\':'.  json_encode($val).',';
 	}
 	Mage::helper('inside')->log('$script: '.$script, true);
 	Mage::helper('inside')->log('LEAVING: '.__METHOD__, true);
@@ -94,7 +94,7 @@ class Inside_Analytics_Block_Analytics extends Mage_Core_Block_Template
 		    if (is_null($val)) {
 			continue;
 		    }
-		    $script .= '\''.$key.'\':\''.  addslashes($val).'\',';
+		    $script .= '\''.$key.'\':'.  json_encode($val).',';
 		}
 		$script = substr($script, 0, strlen($script)-1) . "});";
 	    }

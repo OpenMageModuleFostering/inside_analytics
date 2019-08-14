@@ -118,13 +118,27 @@ class Inside_Analytics_Helper_Data extends Mage_Core_Helper_Abstract {
     }
     
     /**
+     * Get meta title from current page
+     * 
+     * @return string
+     */
+    public function getPageTitle()
+    {
+	$block = Mage::app()->getLayout()->getBlock('head');
+	if ($block) {
+	    return $block->getTitle();
+	}
+	return '';
+    }
+    
+    /**
      * Gets category array from page title (Amasty improved navigation)
      * 
      * @return array
      */
     public function getCategoryFromTitle()
     {
-	$title = explode(' - ', Mage::app()->getLayout()->getBlock('head')->getTitle());
+	$title = explode(' - ', $this->getPageTitle());
 	return $title;
     }
     

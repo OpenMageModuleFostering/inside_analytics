@@ -122,7 +122,7 @@ class Inside_Analytics_Model_PageView_Type extends Mage_Core_Model_Abstract {
     }
     
     /**
-     * Get page name based on it's type
+     * Get page name based on it's type; defaults to page title
      * 
      * @param string $type
      * @return string
@@ -130,8 +130,6 @@ class Inside_Analytics_Model_PageView_Type extends Mage_Core_Model_Abstract {
     public function getPageName($type) 
     {
 	Mage::helper('inside')->log('ENTERING: '.__METHOD__, true);
-	
-	$name = 'Unknown/Untracked Page Type';
 	switch ($type) {
 	    case Inside_Analytics_Model_System_Config_Source_Page_Type::HOMEPAGE: 
 		$name = 'Home Page'; break;
@@ -157,9 +155,8 @@ class Inside_Analytics_Model_PageView_Type extends Mage_Core_Model_Abstract {
 		$name = 'Page Not Found (404)'; break;
 	    case Inside_Analytics_Model_System_Config_Source_Page_Type::OTHER:
 	    default:
-		$name = 'Page Type Not Available'; break;
+		$name = Mage::helper('inside')->getPageTitle(); break;
 	}
-	
 	return $name;
     }
 }
