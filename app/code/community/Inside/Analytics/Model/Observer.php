@@ -57,5 +57,28 @@ class Inside_Analytics_Model_Observer {
 	}
 	Mage::helper('inside')->log('LEAVING: '.__METHOD__, true);
     }
+    
+    public function setEmptySearch(Varien_Event_Observer $observer)
+    {	
+	$layout = $observer->getEvent()->getLayout();
+	/* @var $layout Mage_Core_Model_Layout */
+	$action = $observer->getEvent()->getAction();
+	/* @var $action Mage_Core_Controller_Varien_Action */
+	$block = null;
+	switch ($action->getFullActionName()) {
+	    case 'catalogsearch_advanced_result':		
+		$block = $layout->getBlock('catalogsearch_advanced_result');		
+		break;
+	    case 'catalogsearch_result_index':
+		$block = $layout->getBlock('search.result');
+		break;
+	    default:
+		return $this;
+	}	
+	if ($block) {	    
+	    Mage::register('search_results_count', $block->getResultCount(), true);
+	}
+	return $this;
+    }
 }
 

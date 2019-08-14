@@ -11,7 +11,7 @@
 <config>
     <modules>
 	<Inside_Analytics>
-	    <version>2.5.0</version>
+	    <version>2.6.0</version>
 	</Inside_Analytics>
     </modules>
     <global>
@@ -85,6 +85,14 @@
 		    </insideanalytics_front_response_after>
 		</observers>
 	    </controller_front_send_response_after>
+	    <controller_action_layout_generate_blocks_after>
+		<observers>
+		    <insideanalytics_emptysearch_check>
+			<class>inside/observer</class>
+			<method>setEmptySearch</method>
+		    </insideanalytics_emptysearch_check>
+		</observers>
+	    </controller_action_layout_generate_blocks_after>
         </events>
 	<layout>
 	    <updates>

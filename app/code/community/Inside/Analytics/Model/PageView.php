@@ -25,6 +25,12 @@ class Inside_Analytics_Model_PageView extends Mage_Core_Model_Abstract {
     protected $_category = null;
     
     /**
+     * @var boolean
+     */
+    protected $_outOfStock = false;
+       
+    
+    /**
      * Build category name from page title
      * (applies to Amasty Improved Navigation and similar modules)
      * 
@@ -44,7 +50,7 @@ class Inside_Analytics_Model_PageView extends Mage_Core_Model_Abstract {
     /**
      * Gets array of pageTrack required data
      * 
-     * @param string $fullActionName
+     * @param string $requestArray
      * @return array
      */
     public function getPageTrackCodeData($requestArray)
@@ -59,7 +65,7 @@ class Inside_Analytics_Model_PageView extends Mage_Core_Model_Abstract {
 	    'orderId' => $this->_getOrderId(),
 	    'orderTotal' => $this->_getOrderTotal(),
 	    'shippingTotal' => $this->_getShippingTotal(),
-	    'tags' => $this->_getTags(),
+	    'tags' => $this->_getTags($type),
 	);
 	$pageSpecificData = $this->_getPageSpecificByType($type);
 	
@@ -73,7 +79,7 @@ class Inside_Analytics_Model_PageView extends Mage_Core_Model_Abstract {
     /**
      * Gets array of order track data
      * 
-     * @param string $fullActionName
+     * @param string $requestArray
      * @return array
      */
     public function getOrderTrackCodeData($requestArray)
@@ -213,9 +219,24 @@ class Inside_Analytics_Model_PageView extends Mage_Core_Model_Abstract {
 	return $id;
     }
     
-    protected function _getTags()
+    /**
+     * Gets custom tags string
+     * 
+     * @param string $type The page type
+     * @return string
+     */
+    protected function _getTags($type)
     {
-	return sprintf('language:%s', Mage::app()->getStore()->getCode());
+	$return = sprintf('language:%s', Mage::app()->getStore()->getCode());
+	if ($this->_outOfStock) {
+	    $return.=', outofstock';
+	}
+	if ($type == Inside_Analytics_Model_System_Config_Source_Page_Type::SEARCH) {
+	    if (Mage::registry('search_results_count') === 0) {
+		$return.=', emptysearch';
+	    }
+	}
+	return $return;
     }
     
     /**
@@ -274,8 +295,15 @@ class Inside_Analytics_Model_PageView extends Mage_Core_Model_Abstract {
     protected function _loadProduct()
     {
 	$product = Mage::registry('current_product');
+	if (!$product && Mage::getEdition() === Mage::EDITION_ENTERPRISE) {
+	    //try to load from cache
+	    $processor = Mage::getSingleton('enterprise_pagecache/processor');
+	    $productId = $processor->getMetadata(Enterprise_PageCache_Model_Processor_Product::METADATA_PRODUCT_ID);
+	    $product = Mage::getModel('catalog/product')->load($productId);
+	}
 	if ($product && $product->getId()) {
 	    $this->_product = $product;
+	    $this->_outOfStock = !$product->getData('is_in_stock');
 	}
 	return $this;
     }
@@ -287,6 +315,12 @@ class Inside_Analytics_Model_PageView extends Mage_Core_Model_Abstract {
     protected function _loadCategory()
     {
 	$category = Mage::registry('current_category');
+	if (!$category && Mage::getEdition() === Mage::EDITION_ENTERPRISE) {
+	    //try to load from cache
+	    $processor = Mage::getSingleton('enterprise_pagecache/processor');
+	    $categoryId = $processor->getMetadata(Enterprise_PageCache_Model_Processor_Category::METADATA_CATEGORY_ID);
+	    $category = Mage::getModel('catalog/category')->load($categoryId);
+	}
 	if ($category && $category->getId()) {
 	    $this->_category = $category;
 	}
