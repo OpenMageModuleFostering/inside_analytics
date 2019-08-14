@@ -13,7 +13,9 @@ class Inside_Analytics_Helper_Data extends Mage_Core_Helper_Abstract {
      * Config paths for using throughout the code
      */
     const LOG_FILENAME     = 'inside-analytics.log';
+    const DEFAULT_SERVER   = 'inside-graph.com';
     const XML_PATH_ACTIVE  = 'inside/analytics/active';
+    const XML_PATH_SERVER  = 'inside/analytics/server';
     const XML_PATH_ACCOUNT = 'inside/analytics/account';
     const XML_LOG_ACTIVE   = 'inside/debug/log';
     const XML_LOG_VERBOSE  = 'inside/debug/verbose';
@@ -140,6 +142,21 @@ class Inside_Analytics_Helper_Data extends Mage_Core_Helper_Abstract {
     {
 	$title = explode(' - ', $this->getPageTitle());
 	return $title;
+    }
+    
+    /**
+     * Gets the inside server domain to use
+     * 
+     * @param mixed $store
+     * @return string
+     */
+    public function getServer($store = null)
+    {
+	$server = Mage::getStoreConfig(self::XML_PATH_SERVER, $store);
+	if (strlen(trim($server)) === 0) {
+	    return self::DEFAULT_SERVER;
+	}
+	return $server;
     }
     
     /**

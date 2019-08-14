@@ -29,6 +29,16 @@ class Inside_Analytics_Block_Analytics extends Mage_Core_Block_Template
     }
     
     /**
+     * Get inside server name to connect to
+     * 
+     * @return string
+     */
+    protected function _getServer()
+    {
+	return Mage::helper('inside')->getServer();
+    }
+    
+    /**
      * Get main getTracker code. This will initialise the _insideGraph tracker 
      * object with your account key.
      * 

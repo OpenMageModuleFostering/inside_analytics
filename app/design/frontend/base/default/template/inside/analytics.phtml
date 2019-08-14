@@ -11,7 +11,7 @@
     
     (function () {
 	var inside = document.createElement('script'); inside.type = 'text/javascript'; inside.async = true;
-	inside.src = ('https:' == document.location.protocol ? 'https://' : 'http://') + 'inside-graph.com/ig.js?hn=' + encodeURIComponent(document.location.hostname) + '&_=' + Math.random();
+	inside.src = ('https:' == document.location.protocol ? 'https://' : 'http://') + '<?php echo $this->_getServer() ?>' +'/ig.js?hn=' + encodeURIComponent(document.location.hostname) + '&_=' + Math.random();
 	var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(inside, s);
     })();
 //]]>
