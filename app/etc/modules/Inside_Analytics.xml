@@ -1,0 +1,9 @@
+<?xml version="1.0"?>
+<config>
+    <modules>
+        <Inside_Analytics>
+            <active>true</active>
+            <codePool>community</codePool>
+        </Inside_Analytics>
+    </modules>
+</config>

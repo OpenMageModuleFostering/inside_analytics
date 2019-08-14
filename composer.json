@@ -1,0 +1,16 @@
+{
+    "name": "OpenMageModuleFostering/Inside_Analytics",
+    "type": "magento-module",
+    "license": "Inside-Service-Contract",
+    "homepage": "",
+    "description": "Inside allows you SEE your website visitors in real-time, CHAT  and CONVERT more !",
+    "authors": [
+    {
+        "name": "Hadar Paz",
+        "email": "hadar.paz@inside.tm"
+    }
+],
+    "suggest": {
+        "magento-hackathon/magento-composer-installer": "*"
+    }
+}

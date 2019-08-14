@@ -1,0 +1,64 @@
+<?xml version="1.0"?>
+<!--
+/**
+ * Description of class...
+ * 
+ * @category    Inside
+ * @package     Inside_Analytics
+ * @author      Inside <martin.novak@inside.tm>
+ */
+ -->
+<config>
+    <menu>
+        <inside translate="title" module="inside">
+            <title>Inside</title>
+            <sort_order>75</sort_order>
+            <children>
+		<routes translate="title" module="inside">
+		    <title>Manage Tracking Routes</title>
+		    <sort_order>10</sort_order>
+		    <action>inside/adminhtml_route</action>
+		</routes>
+		<configuration translate="title" module="inside">
+                    <title>Settings</title>
+                    <sort_order>20</sort_order>
+		    <action>adminhtml/system_config/edit/section/inside</action>
+                </configuration>
+            </children>
+        </inside>
+    </menu>
+    <acl>
+        <resources>
+	    <all>
+                <title>Allow Everything</title>
+            </all>
+            <admin>
+                <children>
+		    <inside>
+			<title>Inside</title>
+                        <sort_order>10</sort_order>
+                        <children>
+                            <routes>
+                                <title>Tracking Route Manager</title>
+                            </routes>
+			    <configuration>
+                                <title>Inside Settings</title>
+                            </configuration>
+			</children>
+		    </inside>
+                    <system>
+                        <children>
+                            <config>
+                                <children>
+                                    <inside translate="title" module="inside">
+                                        <title>Inside Analytics</title>
+                                    </inside>
+                                </children>
+                            </config>
+                        </children>
+                    </system>
+                </children>
+            </admin>
+        </resources>
+    </acl>
+</config>

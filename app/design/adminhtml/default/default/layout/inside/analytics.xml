@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<layout>
+    <inside_adminhtml_route_index>
+	<reference name="content">
+            <block type="inside/adminhtml_route" name="inside_route">
+                <block type="inside/adminhtml_route_grid" name="inside_route_grid" />
+            </block>
+        </reference>
+    </inside_adminhtml_route_index>
+    
+    <inside_adminhtml_route_edit>
+	<reference name="head">
+	    <action method="addItem"><type>skin_js</type><name>inside/route.js</name></action>
+	</reference>
+        <reference name="left">
+            <block type="inside/adminhtml_route_edit_tabs" name="inside_route_edit_tabs">
+		<block type="inside/adminhtml_route_edit_tab_general" name="inside_route_edit_tab_general" />
+		<action method="addTab"><name>general_section</name><block>inside_route_edit_tab_general</block></action>
+	    </block>	
+        </reference>
+	<reference name="content">
+            <block type="inside/adminhtml_route_edit" name="inside_route_edit" />
+        </reference>
+    </inside_adminhtml_route_edit>
+</layout>

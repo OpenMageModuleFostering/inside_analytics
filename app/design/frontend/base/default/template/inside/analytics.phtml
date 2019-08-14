@@ -1,0 +1,20 @@
+<?php if (!Mage::helper('core/cookie')->isUserNotAllowSaveCookie()): ?>
+<!-- BEGIN INSIDE ANALYTICS CODE -->
+<?php echo $this->_getDebugCode() ?>
+<script type="text/javascript">
+//<![CDATA[  
+    var _inside = _inside || [];
+    <?php echo $this->_getAccountCode() ?>
+    <?php echo $this->_getPageTrackingCode() ?>
+    <?php echo $this->_getOrdersTrackingCode() ?>
+    <?php echo $this->_getSaleTrackingCode() ?>
+    
+    (function () {
+	var inside = document.createElement('script'); inside.type = 'text/javascript'; inside.async = true;
+	inside.src = ('https:' == document.location.protocol ? 'https://' : 'http://') + 'inside-graph.com/ig.js?hn=' + encodeURIComponent(document.location.hostname) + '&_=' + Math.random();
+	var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(inside, s);
+    })();
+//]]>
+</script>
+<!-- END INSIDE ANALYTICS CODE -->
+<?php endif; ?>

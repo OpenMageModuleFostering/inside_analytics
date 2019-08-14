@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+/**
+ * Description of class...
+ * 
+ * @category    Inside
+ * @package     Inside_Analytics
+ * @author      Inside <martin.novak@inside.tm>
+ */
+ -->
+<layout version="0.1.0">
+    <default>
+        <!-- Inside_Analytics -->
+        <reference name="head">
+            <block type="inside/analytics" name="inside_analytics" as="inside_analytics" template="inside/analytics.phtml" />
+        </reference>
+    </default>
+</layout>
