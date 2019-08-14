@@ -125,13 +125,24 @@ class Inside_Analytics_Helper_Data extends Mage_Core_Helper_Abstract {
      * @return string
      */
     public function getPageTitle()
-    {
+    {        
 	$block = Mage::app()->getLayout()->getBlock('head');
 	if ($block) {
+            if (Mage::getEdition() === Mage::EDITION_ENTERPRISE) {
+                //save page title to FPC
+                Mage::getSingleton('enterprise_pagecache/processor')->setMetadata('page_title', $block->getTitle());
+            }	    
 	    return $block->getTitle();
-	}
+	} else {
+            //try to load from FPC
+            if (Mage::getEdition() === Mage::EDITION_ENTERPRISE) {
+                return Mage::getSingleton('enterprise_pagecache/processor')->getMetadata('page_title');
+            }
+        }
 	return '';
     }
+    
+    
     
     /**
      * Gets category array from page title (Amasty improved navigation)
