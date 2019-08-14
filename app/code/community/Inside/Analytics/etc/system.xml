@@ -20,7 +20,7 @@
             <show_in_store>1</show_in_store>
             <groups>
                 <analytics translate="label">
-                    <label>Inside</label>
+                    <label>General</label>
                     <frontend_type>text</frontend_type>
                     <sort_order>10</sort_order>
                     <show_in_default>1</show_in_default>
@@ -56,34 +56,81 @@
                         </account>
                     </fields>
                 </analytics>
-		<debug translate="label">
-                    <label>Debug</label>
+		<options translate="label">
+		    <label>Options</label>
                     <frontend_type>text</frontend_type>
                     <sort_order>20</sort_order>
                     <show_in_default>1</show_in_default>
                     <show_in_website>1</show_in_website>
                     <show_in_store>1</show_in_store>
                     <fields>
-                        <log translate="label">
-                            <label>Enable Logging</label>
+			<category_title translate="label">
+			    <label>Category From Title</label>
+			    <frontend_type>select</frontend_type>
+			    <source_model>adminhtml/system_config_source_yesno</source_model>
+                            <sort_order>10</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+			    <comment><![CDATA[Builds category name out of page title. Enable for Amasty Improved Navigation and similar extensions.]]></comment>
+			</category_title>
+		    </fields>
+		</options>
+		<debug translate="label">
+                    <label>Debug</label>
+                    <frontend_type>text</frontend_type>
+                    <sort_order>30</sort_order>
+                    <show_in_default>1</show_in_default>
+                    <show_in_website>1</show_in_website>
+                    <show_in_store>1</show_in_store>
+                    <fields>
+			<show translate="label">
+                            <label>Show Request</label>
                             <frontend_type>select</frontend_type>
                             <source_model>adminhtml/system_config_source_yesno</source_model>
                             <sort_order>10</sort_order>
                             <show_in_default>1</show_in_default>
                             <show_in_website>1</show_in_website>
                             <show_in_store>1</show_in_store>
-			    <comment><![CDATA[Enable extension logging: /var/log/inside-analytics.log]]></comment>
-                        </log>
-                        <show translate="label">
-                            <label>Show Request</label>
+			    <comment><![CDATA[Display current request module, controller and action name at the top of every page.]]></comment>
+                        </show>
+                        <log translate="label">
+                            <label>Enable Logging</label>
                             <frontend_type>select</frontend_type>
                             <source_model>adminhtml/system_config_source_yesno</source_model>
                             <sort_order>20</sort_order>
                             <show_in_default>1</show_in_default>
                             <show_in_website>1</show_in_website>
                             <show_in_store>1</show_in_store>
-			    <comment><![CDATA[Display current request module, controller and action name at the top of every page.]]></comment>
-                        </show>
+			    <comment><![CDATA[Enable extension logging: /var/log/inside-analytics.log]]></comment>
+                        </log>
+			<verbose translate="label">
+                            <label>Verbose</label>
+                            <frontend_type>select</frontend_type>
+                            <source_model>adminhtml/system_config_source_yesno</source_model>
+                            <sort_order>30</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+			    <comment><![CDATA[Full extension process log]]></comment>
+			    <depends><log>1</log></depends>
+                        </verbose>
+			<show_log translate="label">
+			    <frontend_type>button</frontend_type>
+			    <frontend_model>inside/adminhtml_system_config_form_button_showlog</frontend_model>
+			    <sort_order>40</sort_order>
+			    <show_in_default>1</show_in_default>
+			    <show_in_website>1</show_in_website>
+			    <show_in_store>1</show_in_store>
+			</show_log>
+			<clear_log translate="label">
+			    <frontend_type>button</frontend_type>
+			    <frontend_model>inside/adminhtml_system_config_form_button_clearlog</frontend_model>
+			    <sort_order>50</sort_order>
+			    <show_in_default>1</show_in_default>
+			    <show_in_website>1</show_in_website>
+			    <show_in_store>1</show_in_store>
+			</clear_log>
                     </fields>
                 </debug>
             </groups>

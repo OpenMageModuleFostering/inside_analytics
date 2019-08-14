@@ -10,7 +10,7 @@
 class Inside_Analytics_Model_PageView_Type extends Mage_Core_Model_Abstract {
 
     /**
-     * List of page view types and associated route names
+     * List of page view types and associated routes
      * @var array
      */
     protected $_typeActions = array();
@@ -27,14 +27,16 @@ class Inside_Analytics_Model_PageView_Type extends Mage_Core_Model_Abstract {
      */
     protected function _loadTrackRoutes()
     {
+	Mage::helper('inside')->log('ENTERING: '.__METHOD__, true);
+	
 	$routes = Mage::getResourceModel('inside/route_collection')
 		->addFieldToFilter('is_active', true);
 	foreach($routes as $route) {
 	    /* @var $route Inside_Analytics_Model_Route */
 	    if (array_key_exists($route->getType(), $this->_typeActions)) {
-		$this->_typeActions[$route->getType()][] = $route->getFullQualifier();
+		$this->_typeActions[$route->getType()][] = $route;
 	    } else {
-		$this->_typeActions[$route->getType()] = array($route->getFullQualifier());
+		$this->_typeActions[$route->getType()] = array($route);
 	    }
 	}
 	return $this;
@@ -58,6 +60,8 @@ class Inside_Analytics_Model_PageView_Type extends Mage_Core_Model_Abstract {
      */
     public function getTypeActions()
     {
+	Mage::helper('inside')->log('ENTERING: '.__METHOD__, true);
+	
 	return $this->_typeActions;
     }
     
@@ -69,32 +73,27 @@ class Inside_Analytics_Model_PageView_Type extends Mage_Core_Model_Abstract {
      */
     public function getPageType($requestArray)
     {
+	Mage::helper('inside')->log('ENTERING: '.__METHOD__, true);
+	
 	$fullActionName = implode('_', array_values($requestArray));
 	$match = $this->_getPageTypeExact($fullActionName);
-	if (!$match) {
-	    $found = false;
-	    foreach ($this->getTypeActions() as $type => $actions)
+	if (!$match) {	    
+	    foreach ($this->getTypeActions() as $type => $routes)
 	    {
-		foreach ($actions as $action) {
-		    $_t = explode('_', $action);
-		    switch (count($_t)) 
+		foreach ($routes as $route) {
+		    /* @var $route Inside_Analytics_Model_Route */
+		    if ($route->matches(
+			    $requestArray[Inside_Analytics_Helper_Data::REQUEST_PART_MODULE],
+			    $requestArray[Inside_Analytics_Helper_Data::REQUEST_PART_CONTROLLER],
+			    $requestArray[Inside_Analytics_Helper_Data::REQUEST_PART_ACTION]
+			)) 
 		    {
-			case 1: //match only module name
-			    if ($_t[0] === $requestArray[Inside_Analytics_Helper_Data::REQUEST_PART_MODULE]) {
-				$match = $type; $found = true;
-			    }
-			    break;
-			case 2: //match module and controller name
-			    if ($_t[0] === $requestArray[Inside_Analytics_Helper_Data::REQUEST_PART_MODULE] &&
-				$_t[1] === $requestArray[Inside_Analytics_Helper_Data::REQUEST_PART_CONTROLLER]) 
-			    {
-				$match = $type; $found = true;
-			    }
-			    break;
-		    }
-		    if ($found) break;
+			$match = $type; break;
+		    }		    	    
 		}
-		if ($found) break;
+		if ($match) {
+		    break;
+		}
 	    }
 	}
 	return $match ? $match : Inside_Analytics_Model_System_Config_Source_Page_Type::OTHER;
@@ -108,10 +107,15 @@ class Inside_Analytics_Model_PageView_Type extends Mage_Core_Model_Abstract {
      */
     protected function _getPageTypeExact($key) 
     {
-	foreach ($this->getTypeActions() as $type => $actions)
+	Mage::helper('inside')->log('ENTERING: '.__METHOD__, true);
+	
+	foreach ($this->getTypeActions() as $type => $routes)
 	{
-	    if (in_array($key, $actions)) {
-		return $type;
+	    foreach ($routes as $route) {
+		/* @var $route Inside_Analytics_Model_Route */
+		if ($route->getFullQualifier() == $key) {
+		    return $type;
+		}
 	    }
 	}
 	return false;
@@ -125,6 +129,8 @@ class Inside_Analytics_Model_PageView_Type extends Mage_Core_Model_Abstract {
      */
     public function getPageName($type) 
     {
+	Mage::helper('inside')->log('ENTERING: '.__METHOD__, true);
+	
 	$name = 'Unknown/Untracked Page Type';
 	switch ($type) {
 	    case Inside_Analytics_Model_System_Config_Source_Page_Type::HOMEPAGE: 

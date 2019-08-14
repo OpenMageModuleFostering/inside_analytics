@@ -22,6 +22,9 @@ class Inside_Analytics_Block_Analytics extends Mage_Core_Block_Template
      */
     public function getPageName()
     {
+	Mage::helper('inside')->log('ENTERING: '.__METHOD__, true);
+	Mage::helper('inside')->log('Page name:'.$this->_getData('page_name'), true);
+	Mage::helper('inside')->log('LEAVING: '.__METHOD__, true);
         return $this->_getData('page_name');
     }
     
@@ -33,9 +36,17 @@ class Inside_Analytics_Block_Analytics extends Mage_Core_Block_Template
      */
     protected function _getAccountCode()
     {
+	Mage::helper('inside')->log('ENTERING: '.__METHOD__, true);
+	
 	$accountId = Mage::getStoreConfig(Inside_Analytics_Helper_Data::XML_PATH_ACCOUNT);
 	$visitorId = Mage::helper('inside')->getVisitorId();
 	$visitorName = Mage::helper('inside')->getVisitorName();
+	
+	Mage::helper('inside')->log('$accountId:'.$accountId, true);
+	Mage::helper('inside')->log('$visitorId:'.$visitorId, true);
+	Mage::helper('inside')->log('$visitorName:'.$visitorName, true);
+	Mage::helper('inside')->log('LEAVING: '.__METHOD__, true);
+        
 	return "_inside.push({
 		    'action': 'getTracker', 'account': '{$this->jsQuoteEscape($accountId)}'{$visitorId}{$visitorName}
 		});
@@ -49,6 +60,8 @@ class Inside_Analytics_Block_Analytics extends Mage_Core_Block_Template
      */
     protected function _getPageTrackingCode()
     {
+	Mage::helper('inside')->log('ENTERING: '.__METHOD__, true);
+	
 	$script = "_inside.push({";
 	$data = Mage::getModel('inside/pageView')->getPageTrackCodeData($this->_requestArray);
 	foreach ($data as $key => $val) {
@@ -57,6 +70,8 @@ class Inside_Analytics_Block_Analytics extends Mage_Core_Block_Template
 	    }
 	    $script .= '\''.$key.'\':\''.  addslashes($val).'\',';
 	}
+	Mage::helper('inside')->log('$script: '.$script, true);
+	Mage::helper('inside')->log('LEAVING: '.__METHOD__, true);
 	
 	return substr($script, 0, strlen($script)-1) . "});";
     }
@@ -68,6 +83,8 @@ class Inside_Analytics_Block_Analytics extends Mage_Core_Block_Template
      */
     protected function _getOrdersTrackingCode()
     {
+	Mage::helper('inside')->log('ENTERING: '.__METHOD__, true);
+	
 	$script = '';
 	$data = Mage::getModel('inside/pageView')->getOrderTrackCodeData($this->_requestArray);
 	if (!empty($data)) {
@@ -82,6 +99,10 @@ class Inside_Analytics_Block_Analytics extends Mage_Core_Block_Template
 		$script = substr($script, 0, strlen($script)-1) . "});";
 	    }
 	}
+	
+	Mage::helper('inside')->log('$script: '.$script, true);
+	Mage::helper('inside')->log('LEAVING: '.__METHOD__, true);
+	
 	return $script;
     }
     
@@ -92,6 +113,8 @@ class Inside_Analytics_Block_Analytics extends Mage_Core_Block_Template
      */
     protected function _getSaleTrackingCode()
     {
+	Mage::helper('inside')->log('ENTERING: '.__METHOD__, true);
+	
 	$orderIds = $this->getOrderIds();
         if (empty($orderIds) || !is_array($orderIds)) {
             return;
@@ -108,6 +131,10 @@ class Inside_Analytics_Block_Analytics extends Mage_Core_Block_Template
 		'orderTotal':'{$order->getGrandTotal()}',
 		'complete':'true'});";
 	}
+	
+	Mage::helper('inside')->log('$script: '.$script, true);
+	Mage::helper('inside')->log('LEAVING: '.__METHOD__, true);
+	
 	return $script;
     }
     
@@ -131,10 +158,9 @@ class Inside_Analytics_Block_Analytics extends Mage_Core_Block_Template
      */
     protected function _toHtml()
     {
-        if (!Mage::helper('inside')->isInsideAnalyticsAvailable() || !is_array($this->_requestArray)) {
+	if (!Mage::helper('inside')->isInsideAnalyticsAvailable() || !is_array($this->_requestArray)) {
 	    return $this->_getDebugCode();
         }
-
         return parent::_toHtml();
     }
     
@@ -142,17 +168,19 @@ class Inside_Analytics_Block_Analytics extends Mage_Core_Block_Template
      * Load current request route params
      */
     protected function _prepareLayout() {
+	Mage::helper('inside')->log('ENTERING: '.__METHOD__, true);
+	
 	parent::_prepareLayout();
 	$action = Mage::app()->getFrontController()->getAction();
+	
 	if ($action) {
 	    $this->_requestArray = array(
 		'module'     => $action->getRequest()->getRequestedRouteName(),
 		'controller' => $action->getRequest()->getRequestedControllerName(),
 		'action'     => $action->getRequest()->getRequestedActionName()
 	    );
-	    if(Mage::helper('inside')->isLoggingEnabled()) {
-		    Mage::log($this->_requestArray, null, 'inside-analytics.log', true);
-	    }
+	    Mage::helper('inside')->log('$this->_requestArray: '.print_r($this->_requestArray, true));
 	}
+	Mage::helper('inside')->log('LEAVING: '.__METHOD__, true);
     }
 }

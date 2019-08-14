@@ -25,17 +25,19 @@ class Inside_Analytics_Model_PageView extends Mage_Core_Model_Abstract {
     protected $_category = null;
     
     /**
-     * Is Amasty Improved Navigation extension active?
+     * Build category name from page title
+     * (applies to Amasty Improved Navigation and similar modules)
      * 
      * @var boolean 
      */
-    protected $_isAmasty = false;
+    protected $_categoryFromTitle = false;
     
     
     public function _construct()
     {
 	parent::_construct();
 	$this->_pageViewType = Mage::getModel('inside/pageView_type');
+	$this->_categoryFromTitle = Mage::helper('inside')->buildCategoryFromTitle();
 	$this->_loadProduct()->_loadCategory();
     }
     
@@ -47,7 +49,8 @@ class Inside_Analytics_Model_PageView extends Mage_Core_Model_Abstract {
      */
     public function getPageTrackCodeData($requestArray)
     {
-	$this->_setAmasty($requestArray);
+	Mage::helper('inside')->log('ENTERING: '.__METHOD__, true);
+	
 	$type = $this->_pageViewType->getPageType($requestArray);
 	$common = array(
 	    'action' => 'trackView',
@@ -55,9 +58,15 @@ class Inside_Analytics_Model_PageView extends Mage_Core_Model_Abstract {
 	    'name' => $this->_pageViewType->getPageName($type),
 	    'orderId' => $this->_getOrderId(),
 	    'orderTotal' => $this->_getOrderTotal(),
-	    'shippingTotal' => $this->_getShippingTotal()
+	    'shippingTotal' => $this->_getShippingTotal(),
+	    'tags' => $this->_getTags(),
 	);
 	$pageSpecificData = $this->_getPageSpecificByType($type);
+	
+	Mage::helper('inside')->log('$pageSpecificData: '.print_r($pageSpecificData, true), true);
+	Mage::helper('inside')->log('$common: '.print_r($common, true), true);
+	Mage::helper('inside')->log('LEAVING: '.__METHOD__, true);
+	
 	return array_merge($common, $pageSpecificData);
     }
     
@@ -69,8 +78,14 @@ class Inside_Analytics_Model_PageView extends Mage_Core_Model_Abstract {
      */
     public function getOrderTrackCodeData($requestArray)
     {
+	Mage::helper('inside')->log('ENTERING: '.__METHOD__, true);
+	
 	$items = array();
 	$type = $this->_pageViewType->getPageType($requestArray);
+	
+	Mage::helper('inside')->log('$type: '.$type, true);
+	Mage::helper('inside')->log('$this->_getQuote()->getItemsCount(): '.$this->_getQuote()->getItemsCount(), true);
+	
 	if (($type == Inside_Analytics_Model_System_Config_Source_Page_Type::CHECKOUT || $this->_isForcedOrderUpdate()) 
 		&& $this->_getQuote()->getItemsCount() > 0)
 	{
@@ -99,6 +114,7 @@ class Inside_Analytics_Model_PageView extends Mage_Core_Model_Abstract {
 	if ($this->_isForcedOrderUpdate()) {
 	    $this->_resetSession();
 	}
+	Mage::helper('inside')->log('LEAVING: '.__METHOD__, true);
 	return $items;
     }
     
@@ -111,11 +127,14 @@ class Inside_Analytics_Model_PageView extends Mage_Core_Model_Abstract {
      */
     protected function _getPageSpecificByType($type)
     {
+	Mage::helper('inside')->log('ENTERING: '.__METHOD__, true);
+	Mage::helper('inside')->log('$type: '.$type, true);
+	
 	$extra = array();
 	switch ($type) {
 	    case Inside_Analytics_Model_System_Config_Source_Page_Type::CATEGORY:
-		if ($this->_isAmasty) {
-		    $categoryArr = array_reverse(Mage::helper('inside')->getAmastyCategory());
+		if ($this->_categoryFromTitle) {
+		    $categoryArr = array_reverse(Mage::helper('inside')->getCategoryFromTitle());
 		    $extra['name'] = array_pop($categoryArr);
 		    $extra['category'] = implode(' / ', $categoryArr);
 		    if (empty($extra['name']) && $this->_category instanceof Mage_Catalog_Model_Category) {
@@ -157,6 +176,8 @@ class Inside_Analytics_Model_PageView extends Mage_Core_Model_Abstract {
 		break;
 		
 	}
+	Mage::helper('inside')->log('$extra: '.print_r($extra, true), true);
+	Mage::helper('inside')->log('LEAVING: '.__METHOD__, true);
 	return $extra;
     }
     
@@ -170,6 +191,9 @@ class Inside_Analytics_Model_PageView extends Mage_Core_Model_Abstract {
      */
     protected function _getPageUniqueId($type)
     {
+	Mage::helper('inside')->log('ENTERING: '.__METHOD__, true);
+	Mage::helper('inside')->log('$type: '.$type, true);
+	
 	$id = null;
 	switch ($type) {
 	    case Inside_Analytics_Model_System_Config_Source_Page_Type::CATEGORY:
@@ -183,7 +207,15 @@ class Inside_Analytics_Model_PageView extends Mage_Core_Model_Abstract {
 		}
 		break;
 	}
+	Mage::helper('inside')->log('$id: '.$id, true);
+	Mage::helper('inside')->log('LEAVING: '.__METHOD__, true);
+	
 	return $id;
+    }
+    
+    protected function _getTags()
+    {
+	return sprintf('language:%s', Mage::app()->getStore()->getCode());
     }
     
     /**
@@ -262,26 +294,15 @@ class Inside_Analytics_Model_PageView extends Mage_Core_Model_Abstract {
     }
     
     /**
-     * Checks for Amasty improved navigation extension
-     * 
-     * @param array $requestArr
-     * @return \Inside_Analytics_Model_PageView
-     */
-    protected function _setAmasty($requestArr)
-    {
-	if ($requestArr[Inside_Analytics_Helper_Data::REQUEST_PART_MODULE] == 'amshopby') {
-	    $this->_isAmasty = true;
-	}
-	return $this;
-    }
-    
-    /**
      * Check if we have outstanding Ajax add-to-cart call
      * 
      * @return boolean
      */
     protected function _isForcedOrderUpdate()
     {
+	Mage::helper('inside')->log('ENTERING: '.__METHOD__, true);
+	Mage::helper('inside')->log('session update on next: '.(string)Mage::getSingleton('core/session')->getInsideUpdateOnNext(), true);
+	Mage::helper('inside')->log('LEAVING: '.__METHOD__, true);
 	return Mage::getSingleton('core/session')->getInsideUpdateOnNext() === true;
     }
     
@@ -290,7 +311,9 @@ class Inside_Analytics_Model_PageView extends Mage_Core_Model_Abstract {
      */
     protected function _resetSession()
     {
+	Mage::helper('inside')->log('ENTERING: '.__METHOD__, true);
 	Mage::getSingleton('core/session')->unsetData('inside_update_on_next');
+	Mage::helper('inside')->log('LEAVING: '.__METHOD__, true);
     }
     
 }

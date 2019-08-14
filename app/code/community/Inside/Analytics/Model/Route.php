@@ -40,15 +40,27 @@ class Inside_Analytics_Model_Route extends Mage_Core_Model_Abstract {
      */
     public function matches($module, $controller, $action)
     {
+	Mage::helper('inside')->log('ENTERING: '.__METHOD__, true);
+	
+	Mage::helper('inside')->log('$module: '.$module, true);
+	Mage::helper('inside')->log('$this->getModule(): '.$this->getModule(), true);
 	if ($this->getModule() !== $module) {
+	    Mage::helper('inside')->log('LEAVING: '.__METHOD__, true);
 	    return false;
 	}
+	Mage::helper('inside')->log('$controller: '.$controller, true);
+	Mage::helper('inside')->log('$this->getController(): '.$this->getController(), true);
 	if ($this->getController() && $this->getController() !== $controller) {
+	    Mage::helper('inside')->log('LEAVING: '.__METHOD__, true);
 	    return false;
 	}
+	Mage::helper('inside')->log('$action: '.$action, true);
+	Mage::helper('inside')->log('$this->getAction(): '.$this->getAction(), true);
 	if ($this->getAction() && $this->getAction() !== $action) {
+	    Mage::helper('inside')->log('LEAVING: '.__METHOD__, true);
 	    return false;
 	}
+	Mage::helper('inside')->log('LEAVING: '.__METHOD__, true);
 	return true;
     }
     
@@ -58,6 +70,8 @@ class Inside_Analytics_Model_Route extends Mage_Core_Model_Abstract {
      */
     protected function _fixRouteName()
     {
+	Mage::helper('inside')->log('ENTERING: '.__METHOD__, true);
+	
 	$fullName = $this->getModule();
 	if ($this->getController()) {
 	    $fullName = $fullName . '_' . $this->getController();
@@ -67,6 +81,7 @@ class Inside_Analytics_Model_Route extends Mage_Core_Model_Abstract {
 	    }
 	}
 	$this->setFullQualifier($fullName);
+	Mage::helper('inside')->log('LEAVING: '.__METHOD__, true);
 	return $this;
     }
     

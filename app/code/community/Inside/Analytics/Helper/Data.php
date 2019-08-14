@@ -12,10 +12,13 @@ class Inside_Analytics_Helper_Data extends Mage_Core_Helper_Abstract {
     /**
      * Config paths for using throughout the code
      */
+    const LOG_FILENAME     = 'inside-analytics.log';
     const XML_PATH_ACTIVE  = 'inside/analytics/active';
     const XML_PATH_ACCOUNT = 'inside/analytics/account';
     const XML_LOG_ACTIVE   = 'inside/debug/log';
+    const XML_LOG_VERBOSE  = 'inside/debug/verbose';
     const XML_SHOW_REQUEST = 'inside/debug/show';
+    const XML_CATEGORY_FROM_TITLE = 'inside/options/category_title';
     
     const REQUEST_PART_MODULE	  = 'module';
     const REQUEST_PART_CONTROLLER = 'controller';
@@ -75,6 +78,15 @@ class Inside_Analytics_Helper_Data extends Mage_Core_Helper_Abstract {
      */
     public function getProductImageUrl(Mage_Catalog_Model_Product $product)
     {
+	if($product->getImage() == 'no_selection') {
+	    //try to get image from parent configurable product
+	    $_parentIdArray = Mage::getModel('catalog/product_type_configurable')->getParentIdsByChild($product->getId());
+	    if(sizeof($_parentIdArray) >=1 && Mage::getModel('catalog/product')->load($_parentIdArray[0])->getTypeId() == 'configurable')
+	    {
+		$product = Mage::getModel('catalog/product')->load($_parentIdArray[0]);
+	    }
+
+	}
 	return sprintf('%s', Mage::helper('catalog/image')->init($product, 'thumbnail')->resize(256));
     }
     
@@ -110,7 +122,7 @@ class Inside_Analytics_Helper_Data extends Mage_Core_Helper_Abstract {
      * 
      * @return array
      */
-    public function getAmastyCategory()
+    public function getCategoryFromTitle()
     {
 	$title = explode(' - ', Mage::app()->getLayout()->getBlock('head')->getTitle());
 	return $title;
@@ -128,6 +140,35 @@ class Inside_Analytics_Helper_Data extends Mage_Core_Helper_Abstract {
     }
     
     /**
+     * Is verbose log option enabled?
+     * 
+     * @param int $store
+     * @return boolean
+     */
+    public function isVerboseEnabled($store = null)
+    {
+	return Mage::getStoreConfigFlag(self::XML_LOG_VERBOSE, $store);
+    }
+    
+    /**
+     * Wrapper for Magentos' own log function
+     * 
+     * @param mixed $data
+     * @param boolean $verbose
+     * @param int $store
+     */
+    public function log($data, $verbose = false, $store = null) 
+    {
+	if ($this->isLoggingEnabled($store)) {
+	    if ($verbose === false || ($verbose && $this->isVerboseEnabled($store))) {
+		$ip = Mage::helper('core/http')->getRemoteAddr();
+		$log = $ip ? $ip .'|'. $data : $data;
+		Mage::log($log, null, self::LOG_FILENAME, true);
+	    }
+	}
+    }
+    
+    /**
      * Can request array be shown?
      * 
      * @param int $store
@@ -136,6 +177,19 @@ class Inside_Analytics_Helper_Data extends Mage_Core_Helper_Abstract {
     public function canShowRequest($store = null)
     {
 	return Mage::getStoreConfigFlag(self::XML_SHOW_REQUEST, $store);
+    }
+    
+    /**
+  
+     * @param mixed $store
+     * @return boolean   * Build category name from page title?
+     * 
+     * @param mixed $store
+     * @return boolean
+     */
+    public function buildCategoryFromTitle($store = null)
+    {
+	return Mage::getStoreConfigFlag(self::XML_CATEGORY_FROM_TITLE, $store);
     }
     
     /**
